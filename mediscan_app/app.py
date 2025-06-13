@@ -1,10 +1,9 @@
 import streamlit as st
 import torch
 import torch.nn as nn
-from torchvision import models, transforms
+from torchvision.models import efficientnet_b2, resnet50
 from PIL import Image, UnidentifiedImageError
 import io
-import os
 
 # ---- Config ----
 st.set_page_config(page_title="🧠 MediScan AI", layout="wide")
@@ -13,7 +12,7 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # ---- Load Models ----
 @st.cache_resource
 def load_oral_model():
-    model = models.efficientnet_b2(weights=None)
+    model = efficientnet_b2(weights=None)  # No pretrained weights
     num_ftrs = model.classifier[1].in_features
     model.classifier[1] = nn.Linear(num_ftrs, 1)
     model.load_state_dict(torch.load("oral_cancer_detector_best_b2.pth", map_location=DEVICE))
@@ -22,7 +21,7 @@ def load_oral_model():
 
 @st.cache_resource
 def load_pulmo_model():
-    model = models.resnet50(weights=None)
+    model = resnet50(weights=None)  # No pretrained weights
     num_ftrs = model.fc.in_features
     model.fc = nn.Sequential(
         nn.Linear(num_ftrs, 1024),
@@ -36,6 +35,8 @@ def load_pulmo_model():
     return model
 
 # ---- Preprocessing ----
+from torchvision import transforms
+
 oral_transform = transforms.Compose([
     transforms.Resize(288),
     transforms.CenterCrop(260),
