@@ -113,3 +113,10 @@ if uploaded_file is not None:
 
 else:
     st.info("Please upload an image to get started.")
+st.markdown("""
+---
+⚠️ **Disclaimer:** This tool is intended for scientific research and educational purposes only.  
+It **should NOT** be used for medical diagnosis or treatment decisions.  
+Please consult a qualified healthcare professional for any medical concerns.
+---
+""")
